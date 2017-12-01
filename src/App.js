@@ -3,7 +3,9 @@ import { Container } from 'reactstrap'
 import axios from 'axios'
 import Header from './Header'
 import Body from './Body'
-import { ACCESS_TOKEN } from './consts'
+import { ACCESS_TOKEN, BLUE_BORDER } from './consts'
+
+import './index.css'
 
 class App extends Component {
   constructor() {
@@ -76,10 +78,12 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <Header/>
-        <br/>
-        <Body/>
+      <div style={{ backgroundColor: BLUE_BORDER}} >
+        <div style={{ backgroundColor: "white", width: "75%", marginLeft: "auto", marginRight: "auto", boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}} >
+          <Header/>
+          <br/>
+          <Body/>
+        </div>
       </div>
     );
   }
