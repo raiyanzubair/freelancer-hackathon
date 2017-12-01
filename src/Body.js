@@ -3,7 +3,6 @@ import { Container, Row, Button, Table} from 'reactstrap'
 import MyForm from './MyForm' 
 import JobTable from './JobTable'
 import axios from 'axios'
-import { Position, Toaster } from "@blueprintjs/core";
 import { PROD_ACCESS_TOKEN, ACCESS_TOKEN } from './consts'
 
 import { BLUE_BORDER } from './consts.js'
@@ -14,8 +13,6 @@ export default class Body extends React.Component {
 		this.state = {
 			GitHub: "",
 			BitBucket: "",
-			LinkedIn: "",
-			Freelancer: "",
 			projects: [],
 		}
 		this.onChange = this.onChange.bind(this)
@@ -69,24 +66,6 @@ export default class Body extends React.Component {
     })
   }
 
-  searchFreelancer(username) {
-    axios.get(`https://www.freelancer.com/api/users/0.1/users/?usernames[]=${username}`, {
-      headers: {
-        "Freelancer-OAuth-V1": PROD_ACCESS_TOKEN,
-      }
-    }).then(response => {
-      console.log(response.data.result.users)
-      // this.setState({
-      // 	projects: this.state.projects.concat([{
-      //     id: this.state.projects.length,
-      //     name: 
-      // 	}])
-      // })
-    }).catch(error => {
-      console.log(error.message)
-    })
-  }
-
   findMeJobs(state) {
   	this.setState({projects: []})
   	this.searchGitHub(state.GitHub)
@@ -102,8 +81,6 @@ export default class Body extends React.Component {
 				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px", padding: "5px"}}>
 					<Row><MyForm provider="GitHub" input={this.state.github} change={this.onChange}/></Row>
 					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={this.onChange}/></Row>
-					<Row><MyForm provider="Linkedin" input={this.state.linkedin} change={this.onChange}/></Row>
-					<Row><MyForm provider="Freelancer" input={this.state.Freelancer} change={this.onChange}/></Row>
 					<br/>
 					<Button style={{ borderColor: BLUE_BORDER, backgroundColor: "white", color: BLUE_BORDER, margin: "auto" }} onClick={() => this.findMeJobs(this.state)}>FIND ME WORK</Button>
 				</Container>
