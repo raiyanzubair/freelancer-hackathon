@@ -99,7 +99,7 @@ export default class Body extends React.Component {
 	render() {
 		return (
 			<div>
-				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px"}}>
+				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px", padding: "5px"}}>
 					<Row><MyForm provider="GitHub" input={this.state.github} change={this.onChange}/></Row>
 					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={this.onChange}/></Row>
 					<Row><MyForm provider="Linkedin" input={this.state.linkedin} change={this.onChange}/></Row>
