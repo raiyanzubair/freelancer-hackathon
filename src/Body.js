@@ -1,21 +1,24 @@
 import React from 'react'
-import { Container, Row, Button, Table} from 'reactstrap'
+import { Label, Container, Row, Button} from 'reactstrap'
 import MyForm from './MyForm' 
 import JobTable from './JobTable'
+import SkillsList from './SkillsList'
 import axios from 'axios'
+import ReactLoading from 'react-loading';
 import { PROD_ACCESS_TOKEN, ACCESS_TOKEN } from './consts'
 
-import { BLUE_BORDER } from './consts.js'
+import { BUTTON_STYLE } from './consts.js'
 
 export default class Body extends React.Component {
-	constructor() {
-		super()
-		this.state = {
+	componentWillMount() {
+		this.setState({
 			GitHub: "",
 			BitBucket: "",
 			projects: [],
-		}
-		this.onChange = this.onChange.bind(this)
+			keywords: [],
+			projects: [],
+		})
+		this.searchFreelancer = this.searchFreelancer.bind(this)
 	}
 
 	onChange(event) {
@@ -25,7 +28,7 @@ export default class Body extends React.Component {
 	}
 
 	searchGitHub(username) {
-		axios.get(`https://api.github.com/users/${username}/repos`, {
+		return axios.get(`https://api.github.com/users/${username}/repos`, {
 			headers: {
 				"Accept": "application/vnd.github.v3+json"
 			}
@@ -39,16 +42,16 @@ export default class Body extends React.Component {
             description: repo.description,
             language: repo.language,
             url: repo.svn_url
-          }])
+          }]),
+          keywords: this.state.keywords.concat([repo.language])
         })
 			})
-		}).catch(error => {
-			console.log(error.message)
+			console.log(response)
 		})
 	}
 
 	searchBitBucket(username) {
-    axios.get(`https://api.bitbucket.org/2.0/users/${username}/repositories`).then(response => {
+    return axios.get(`https://api.bitbucket.org/2.0/users/${username}/repositories`).then(response => {
       response.data.values.map(repo => {
         this.setState({
           projects: this.state.projects.concat([{
@@ -58,37 +61,66 @@ export default class Body extends React.Component {
             description: repo.description,
             language: repo.language,
             url: `https://bitbucket.org/${repo.full_name}`
-          }])
+          }]),
+          keywords: this.state.keywords.concat([repo.language])
         })
       })
-    }).catch(error => {
-      console.log(error)
+      console.log(response)
     })
   }
 
-  findMeJobs(state) {
-  	this.setState({projects: []})
-  	this.searchGitHub(state.GitHub)
-  	this.searchBitBucket(state.BitBucket)
-  	// this.searchFreelancer()
+  findMySkills(state) {
+  	this.setState({projects: [], keywords: [], loading: true})
+  	// this.searchGitHub(state.GitHub).then(() => {
+  	// 	return 
+  	this.searchBitBucket(state.BitBucket).then(() => {
+  		console.log("joining")
+	  	this.setState({
+	  		keywords: this.state.keywords.filter((value, index, self) => {
+					return self.indexOf(value) === index && value !== "" 
+				}).map(value => {
+  				return value.toLowerCase()
+  			}),
+  			loading: false 
+  		}) 
+  	}).catch(error => {
+  		console.log(error)
+  	})
   }
 
-  //  <Container style={{margin: "auto", textAlign: "center", maxWidth: "800px"}}>
+  searchFreelancer(searchArray) {
+  	this.setState({ 
+			projects: []
+		})
+  	const searchTerms = searchArray.join(" ")
+  	axios.get(`https://www.freelancer.com/api/projects/0.1/projects/active/?query=${searchTerms}`).then(response => {
+  		this.setState({ 
+  			projects: response.data.result.projects 
+  		})
+  		console.log(this.state.projects)
+  	}).catch(error => {
+  		console.log(error.message)
+  	})
+  }
 
 	render() {
 		return (
 			<div>
 				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px", padding: "5px"}}>
-					<Row><MyForm provider="GitHub" input={this.state.github} change={this.onChange}/></Row>
-					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={this.onChange}/></Row>
+					<Row><MyForm provider="GitHub" input={this.state.github} change={(event) => this.onChange(event)}/></Row>
+					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={(event) => this.onChange(event)}/></Row>
 					<br/>
-					<Button style={{ borderColor: BLUE_BORDER, backgroundColor: "white", color: BLUE_BORDER, margin: "auto" }} onClick={() => this.findMeJobs(this.state)}>FIND ME WORK</Button>
+					<Button style={BUTTON_STYLE} onClick={() => this.findMySkills(this.state)}>Find my skills</Button>
 				</Container>
 				<hr/>
 				<div>
-				{this.state.projects.length === 0 ? null
+				{this.state.keywords.length === 0 ? null
 					:
-						<JobTable projects={this.state.projects}/>
+					this.state.loading ? <ReactLoading style={{margin:"auto"}} type="spin" color="#ffff" height='100' width='100'/> 
+						:
+						<Container style={{margin: "auto", maxWidth: "800px", padding: "5px"}}>
+							<SkillsList searchFreelancer={this.searchFreelancer} keywords={this.state.keywords}/>
+						</Container>
 				}	
 				</div>
 			</div>	

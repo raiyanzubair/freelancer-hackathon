@@ -17,7 +17,6 @@ export default class JobTable extends React.Component {
 				</thead>
 				<tbody>
 					{projects.map((item,index) => {
-						console.log(item)
 						return(
 							<tr key={index}>
 								<th scope="row">{index}</th>

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Container } from 'reactstrap'
-import axios from 'axios'
 import Header from './Header'
 import Body from './Body'
-import { ACCESS_TOKEN, BLUE_BORDER } from './consts'
+import { BLUE_BORDER } from './consts'
 
 import './index.css'
 
