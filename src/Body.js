@@ -6,6 +6,8 @@ import axios from 'axios'
 import { Position, Toaster } from "@blueprintjs/core";
 import { PROD_ACCESS_TOKEN, ACCESS_TOKEN } from './consts'
 
+import { BLUE_BORDER } from './consts.js'
+
 export default class Body extends React.Component {
 	constructor() {
 		super()
@@ -92,16 +94,18 @@ export default class Body extends React.Component {
   	// this.searchFreelancer()
   }
 
+  //  <Container style={{margin: "auto", textAlign: "center", maxWidth: "800px"}}>
+
 	render() {
 		return (
 			<div>
-				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px"}}>
+				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px", padding: "5px"}}>
 					<Row><MyForm provider="GitHub" input={this.state.github} change={this.onChange}/></Row>
 					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={this.onChange}/></Row>
 					<Row><MyForm provider="Linkedin" input={this.state.linkedin} change={this.onChange}/></Row>
 					<Row><MyForm provider="Freelancer" input={this.state.Freelancer} change={this.onChange}/></Row>
 					<br/>
-					<Button onClick={() => this.findMeJobs(this.state)}>FIND ME WORK</Button>
+					<Button style={{ borderColor: BLUE_BORDER, backgroundColor: "white", color: BLUE_BORDER, margin: "auto" }} onClick={() => this.findMeJobs(this.state)}>FIND ME WORK</Button>
 				</Container>
 				<hr/>
 				<div>
