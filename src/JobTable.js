@@ -13,7 +13,6 @@ export default class JobTable extends React.Component {
 						<th>Project</th>
 						<th>Description</th>
 						<th>Language</th>
-						<th>Link</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -23,10 +22,9 @@ export default class JobTable extends React.Component {
 							<tr key={index}>
 								<th scope="row">{index}</th>
 								<td>{item.provider}</td>
-								<td>{item.name}</td>
+								<td><a href={item.url}>{item.name}</a></td>
 								<td>{item.description}</td>
 								<td>{item.language}</td>
-								<td>{item.url}</td>
 							</tr>
 						)
 					})
