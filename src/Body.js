@@ -1,11 +1,11 @@
 import React from 'react'
-import { Label, Container, Row, Button} from 'reactstrap'
+import { Container, Row, Button} from 'reactstrap'
 import MyForm from './MyForm' 
 import JobTable from './JobTable'
 import SkillsList from './SkillsList'
 import axios from 'axios'
 import ReactLoading from 'react-loading';
-import { PROD_ACCESS_TOKEN, ACCESS_TOKEN } from './consts'
+import { PROD_ACCESS_TOKEN } from './consts'
 
 import { BUTTON_STYLE } from './consts.js'
 
@@ -14,11 +14,12 @@ export default class Body extends React.Component {
 		this.setState({
 			GitHub: "",
 			BitBucket: "",
+			Freelancer: "",
 			projects: [],
 			keywords: [],
-			projects: [],
+			jobs: [],
 		})
-		this.searchFreelancer = this.searchFreelancer.bind(this)
+		this.searchFreelancerProjects = this.searchFreelancerProjects.bind(this)
 	}
 
 	onChange(event) {
@@ -46,7 +47,6 @@ export default class Body extends React.Component {
           keywords: this.state.keywords.concat([repo.language])
         })
 			})
-			console.log(response)
 		})
 	}
 
@@ -65,79 +65,103 @@ export default class Body extends React.Component {
           keywords: this.state.keywords.concat([repo.language])
         })
       })
-      console.log(response)
     })
+  }
+
+  searchFreelancer(username) {
+  	return axios.get(`https://www.freelancer.com/api/users/0.1/users/`, {
+  		headers: {
+				"Freelancer-OAuth-V1": PROD_ACCESS_TOKEN, 
+			},
+			params: {
+				"usernames[]": username,
+				"jobs": true
+			}
+  	}).then(response => {
+  		console.log(response.data)
+  		Object.keys(response.data.result.users).forEach((key) => {
+  			response.data.result.users[key].jobs.map((job) => {
+  				this.setState({
+  					keywords: this.state.keywords.concat(job.name)
+  				})
+  			})
+  		})
+  	})
   }
 
   findMySkills(state) {
   	this.setState({projects: [], keywords: [], loading: true})
-  	// this.searchGitHub(state.GitHub).then(() => {
-  	// 	return 
-  	this.searchBitBucket(state.BitBucket).then(() => {
-  		console.log("joining")
+  	// this.searchGitHub(state.GitHub).then(() => { 
+  	this.searchFreelancer(state.Freelancer).then(() => {
+  		return this.searchBitBucket(state.BitBucket)
+  	}).then(() => {
 	  	this.setState({
 	  		keywords: this.state.keywords.filter((value, index, self) => {
 					return self.indexOf(value) === index && value !== "" 
-				}).map(value => {
-  				return value.toLowerCase()
-  			}),
+				}),
   			loading: false 
-  		}) 
+  		})
   	}).catch(error => {
   		console.log(error)
   	})
   }
 
-  searchFreelancer(skillsArray) {
+  searchFreelancerProjects(skillsArray) {
   	this.setState({ 
-			projects: []
+			jobs: [],
+			loading: true,
 		})
-  	var skillIDs = []
-  	skillsArray.forEach((item) => {
-  		axios.get(`https://www.freelancer.com/api/projects/0.1/jobs/`, {
-  			headers: {
-  				"Freelancer-OAuth-V1": PROD_ACCESS_TOKEN, 
-  			},
-  			params: {
-  				"job_names[]": item,
-  			}
-  		}).then(response => {
-  			console.log(response.data)
-  		})
-  	})
-  	axios.get(`https://www.freelancer.com/api/projects/0.1/projects/active/?query=${skillIDs}`).then(response => {
-  		response.data.result.projects.map(project => {
-  			// console.log(project)
-  			this.setState({ 
-  				projects: this.state.projects.concat([{
-  				}]) 
-  			})
-  		})
-  	}).catch(error => {
-  		console.log(error.message)
-  	})
+		axios.get(`https://www.freelancer.com/api/projects/0.1/projects/active/`, {
+			headers: {
+				"Freelancer-OAuth-V1": PROD_ACCESS_TOKEN, 
+			},
+			params: {
+				"query": skillsArray.join(" "),
+				"include_contests": "true",
+			}
+		}).then(response => {
+			response.data.result.projects.map(job => {
+				this.setState({ 
+					jobs: this.state.jobs.concat([{
+						id: job.id,
+						title: job.title,
+						description: job.description !== null ? job.description : job.preview_description,
+						link: `https://www.freelancer.com/projects/${job.seo_url}`
+					}]) 
+				})
+			})
+			this.setState({loading: false})
+		}).catch(error => {
+			console.log(error.message)
+		})
   }
 
 	render() {
 		return (
 			<div>
 				<Container style={{margin: "auto", textAlign: "center", maxWidth: "800px", padding: "5px"}}>
-					<Row><MyForm provider="GitHub" input={this.state.github} change={(event) => this.onChange(event)}/></Row>
-					<Row><MyForm provider="BitBucket" input={this.state.bitbucket} change={(event) => this.onChange(event)}/></Row>
+					<Row><MyForm provider="GitHub" input={this.state.GitHub} change={(event) => this.onChange(event)}/></Row>
+					<Row><MyForm provider="BitBucket" input={this.state.BitBucket} change={(event) => this.onChange(event)}/></Row>
+					<Row><MyForm provider="Freelancer" input={this.state.Freelancer} change={(event) => this.onChange(event)}/></Row>
 					<br/>
 					<Button style={BUTTON_STYLE} onClick={() => this.findMySkills(this.state)}>Find my skills</Button>
 				</Container>
-				<hr/>
-				<div>
 				{this.state.keywords.length === 0 ? null
 					:
-					this.state.loading ? <ReactLoading style={{margin:"auto"}} type="spin" color="#ffff" height='100' width='100'/> 
+					<Container style={{margin: "auto", maxWidth: "800px", padding: "5px"}}>
+						<hr/>
+						<SkillsList searchFreelancerProjects={this.searchFreelancerProjects} keywords={this.state.keywords}/>
+					</Container>
+				}
+				{this.state.loading ? <div style={{verticalAlign: "middle"}}><ReactLoading type="spin" color="#8CB0EC" height='64px' width='64'/></div> 
 						:
-						<Container style={{margin: "auto", maxWidth: "800px", padding: "5px"}}>
-							<SkillsList searchFreelancer={this.searchFreelancer} keywords={this.state.keywords}/>
-						</Container>
+					this.state.jobs.length === 0 ? null
+					:
+					<Container>
+						<hr/>
+						<JobTable projects={this.state.jobs} />
+					</Container>
 				}	
-				</div>
 			</div>	
 		)
 	}

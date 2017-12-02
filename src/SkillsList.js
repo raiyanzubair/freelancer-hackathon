@@ -23,7 +23,7 @@ export default class SkillsList extends React.Component {
 			}
 		})
 		if (chosenSkills.length !== 0) {
-			this.props.searchFreelancer(chosenSkills)
+			this.props.searchFreelancerProjects(chosenSkills)
 		}
 	}
 
@@ -43,6 +43,7 @@ export default class SkillsList extends React.Component {
 					)
 				})}
 				</Col>
+				<br/>
 				<Button onClick={() => this.passToFreelancer(this.state)} style={BUTTON_STYLE}>Find jobs</Button>
 			</Container>
 		)
