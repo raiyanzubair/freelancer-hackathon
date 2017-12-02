@@ -51,6 +51,9 @@ export default class Body extends React.Component {
 	}
 
 	searchBitBucket(username) {
+		if (!username) {
+  		return
+  	}
     return axios.get(`https://api.bitbucket.org/2.0/users/${username}/repositories`).then(response => {
       response.data.values.map(repo => {
         this.setState({
@@ -69,6 +72,9 @@ export default class Body extends React.Component {
   }
 
   searchFreelancer(username) {
+  	if (!username) {
+  		return
+  	}
   	return axios.get(`https://www.freelancer.com/api/users/0.1/users/`, {
   		headers: {
 				"Freelancer-OAuth-V1": PROD_ACCESS_TOKEN, 
