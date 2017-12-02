@@ -28,7 +28,6 @@ export default class SkillsList extends React.Component {
 	}
 
 	render() {
-		console.log(this.state)
 		return (
 			<Container>
 				<Label>Select the skills you wish to look for jobs in</Label>

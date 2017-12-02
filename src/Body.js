@@ -88,16 +88,31 @@ export default class Body extends React.Component {
   	})
   }
 
-  searchFreelancer(searchArray) {
+  searchFreelancer(skillsArray) {
   	this.setState({ 
 			projects: []
 		})
-  	const searchTerms = searchArray.join(" ")
-  	axios.get(`https://www.freelancer.com/api/projects/0.1/projects/active/?query=${searchTerms}`).then(response => {
-  		this.setState({ 
-  			projects: response.data.result.projects 
+  	var skillIDs = []
+  	skillsArray.forEach((item) => {
+  		axios.get(`https://www.freelancer.com/api/projects/0.1/jobs/`, {
+  			headers: {
+  				"Freelancer-OAuth-V1": PROD_ACCESS_TOKEN, 
+  			},
+  			params: {
+  				"job_names[]": item,
+  			}
+  		}).then(response => {
+  			console.log(response.data)
   		})
-  		console.log(this.state.projects)
+  	})
+  	axios.get(`https://www.freelancer.com/api/projects/0.1/projects/active/?query=${skillIDs}`).then(response => {
+  		response.data.result.projects.map(project => {
+  			// console.log(project)
+  			this.setState({ 
+  				projects: this.state.projects.concat([{
+  				}]) 
+  			})
+  		})
   	}).catch(error => {
   		console.log(error.message)
   	})
