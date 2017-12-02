@@ -1,0 +1,19 @@
+.checkboxblue{
+  background-color: white; 
+  color: #8CB0EC;
+}
+.checkboxblue:hover {
+  background-color: #8CB0EC; 
+  color: white;
+}
+.checkboxblue:active {
+  background-color: blue; 
+}
+
+.co {
+  color: #8CB0EC;
+}
+
+.co:hover {
+  color: white;
+}
