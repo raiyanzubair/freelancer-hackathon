@@ -1,6 +1,8 @@
 import React from 'react'
 import {Row, Col, Input, Container, Label, Button} from 'reactstrap'
-import { BUTTON_STYLE } from './consts'
+import { BUTTON_STYLE, BLUE_BORDER } from './consts'
+
+import './SkillsList.css'
 
 export default class SkillsList extends React.Component {
 	componentWillMount() {
@@ -32,18 +34,25 @@ export default class SkillsList extends React.Component {
 		return (
 			<Container>
 				<Label>Select the skills you wish to look for jobs in</Label>
-				<Col>
+				<div style={{ padding: "10px"}}>
 				{this.props.keywords.map((word, index) => {
 					return (
-						<Row key={index}>	
-							<Label>
-								<Input name={word} type="checkbox" key={index} onClick={(event) => this.handleChange(event)}/>
+                                            <div style={{ padding: "5px", display: "inline-block"}}>
+						<div key={index} style={{ borderStyle: "solid", borderWidth: "1px", borderRadius: "3px", textSize:"1em", borderColor: BLUE_BORDER, color: "white", display: "inline-block", padding: "5px"}} 
+                                                  className="checkboxblue"
+                                                >	
+							<div style={{ textAlign: "center"}} className="co">
+								<Input 
+                                                                  name={word} type="checkbox" key={index} onClick={(event) => this.handleChange(event)}
+                                                                  style={{ display: "none"}}
+                                                                />
 								{word}
-							</Label>
-						</Row>	
+							</div>
+						</div>	
+                                            </div>	
 					)
 				})}
-				</Col>
+				</div>
 				<Button onClick={() => this.passToFreelancer(this.state)} style={BUTTON_STYLE}>Find jobs</Button>
 			</Container>
 		)
