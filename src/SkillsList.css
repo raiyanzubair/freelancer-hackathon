@@ -3,18 +3,20 @@
   color: #8CB0EC;
 }
 .checkboxblue:hover {
-  background-color: #8CB0EC; 
+  background-color: #937474; 
   color: white;
 }
 .checkboxblue:active {
-  background-color: #8CB0EC; 
+  background-color: #937474; 
   color: white;
 }
 
 .co {
-  color: #8CB0EC;
+  color: #937474;
+  background-color: white; 
 }
 
 .co:hover {
   color: white;
+  background-color: #937474;
 }
