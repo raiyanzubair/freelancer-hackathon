@@ -7,7 +7,8 @@
   color: white;
 }
 .checkboxblue:active {
-  background-color: blue; 
+  background-color: #8CB0EC; 
+  color: white;
 }
 
 .co {
